@@ -1,98 +1,159 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Weather App Nation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Bu proje, NestJS ile geliştirilmiş, MySQL ve Redis kullanan hava durumu sorgu servisini içerir. Container’lar Docker Compose ile yönetilir; JWT tabanlı kimlik doğrulama, Role-Based Access Control, Swagger dokümantasyonu, TypeORM migration ve seed, Redis cache, OpenWeather API entegrasyonu gibi özellikleri barındırır.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🚀 Başlarken
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### Önkoşullar
 
-## Project setup
+- [Docker](https://docs.docker.com/get-docker/) (v20+)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### 1. Depoyu Klonlayın
 
 ```bash
-$ npm install
+git clone https://github.com/YOUR_USERNAME/weather-app-nation.git
+cd weather-app-nation
 ```
 
-## Compile and run the project
+### 2. Ortam Değişkenlerini Ayarlayın
+
+Kök dizinde bir `.env` dosyası oluşturun:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+İçeriğini şöyle güncelleyin:
+
+```dotenv
+# MySQL
+MYSQL_ROOT_PASSWORD=your_root_password
+MYSQL_DATABASE=weatherdb
+MYSQL_USER=weather_user
+MYSQL_PASSWORD=weather_pass
+
+# Uygulama — TypeORM
+DATABASE_HOST=db
+DATABASE_PORT=3306
+DATABASE_USERNAME=${MYSQL_USER}
+DATABASE_PASSWORD=${MYSQL_PASSWORD}
+DATABASE_NAME=${MYSQL_DATABASE}
+
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# JWT
+JWT_SECRET=changeme!
+JWT_EXPIRES_IN=3600s
+
+# OpenWeather API
+WEATHER_API_KEY=your_openweather_api_key
+```
+
+> **Not:** OpenWeatherMap anahtarınızı [buradan](https://openweathermap.org/) alın ve `WEATHER_API_KEY` olarak yapıştırın. API anahtarınızın aktifleşmesi 1–2 saat sürebilir.
+
+---
+
+## 🐳 Docker ile Çalıştırma
+
+Tüm servisleri ayağa kaldırmak için:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker-compose up --build -d
 ```
 
-## Deployment
+- **app**: NestJS uygulaması (http://localhost:3000)  
+- **db**: MySQL (port 3306)  
+- **redis**: Redis (port 6379)  
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Konteynerleri durdurmak ve silmek için:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose down
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## 📦 Veritabanı Migration & Seed
 
-Check out a few resources that may come in handy when working with NestJS:
+1. **Migration çalıştırma**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+   ```bash
+   docker-compose exec app npm run migration:run
+   ```
 
-## Support
+   > “No migrations are pending” göründüyse tablolarınız zaten oluşturulmuştur.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+2. **Seed (admin kullanıcısı ekleme)**
 
-## Stay in touch
+   ```bash
+   docker-compose exec app npm run seed
+   ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+   Çıktıda “Seed: Created admin user (admin@example.com/password123)” veya “already exists” göreceksiniz.
 
-## License
+---
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 🛠️ Uygulamaya Erişim
+
+- **API root**: `http://localhost:3000`  
+- **Swagger UI**: `http://localhost:3000/api-docs`  
+  - “Authorize” butonuna `Bearer <token>` girerek korumalı endpoint’leri test edebilirsiniz.  
+
+### Örnek Postman Akışı
+
+1. `POST /users/register` → kullanıcı oluştur  
+2. `POST /auth/login` → token al  
+3. Header’a `Authorization: Bearer {{token}}` ekleyip  
+4. `GET /weather?city=Istanbul` → hava sorgusu  
+
+---
+
+## 🧪 Testler
+
+Projeyi lokal çalıştırdıktan sonra (node/npm kurulumuyla):
+
+```bash
+npm install
+npm run build
+npm test            # Birim testleri
+npm run test:e2e    # E2E testleri (Supertest)
+```
+
+---
+
+## 📂 Dosya Yapısı
+
+```
+weather-app-nation/
+├─ src/
+│  ├─ auth/
+│  ├─ common/
+│  ├─ config/
+│  ├─ users/
+│  ├─ weather/
+│  └─ main.ts
+├─ migrations/
+├─ data-source.ts
+├─ Dockerfile
+├─ docker-compose.yml
+├─ .env.example
+├─ package.json
+└─ tsconfig.json
+```
+
+---
+
+## 📖 Daha Fazla Bilgi
+
+- [NestJS Dokümantasyonu](https://docs.nestjs.com/)  
+- [TypeORM Migrations](https://typeorm.io/migrations)  
+- [Swagger/A OpenAPI NestJS](https://docs.nestjs.com/openapi/introduction)  
+
+---
+
+**Keyfe keder kodlamalar!**
